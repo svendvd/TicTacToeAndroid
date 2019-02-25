@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">TicTacToe</string>
+
+    <string name="use_dark_theme_setting">Use Dark Theme</string>
+    <string name="use_light_theme_setting">Use Light Theme</string>
+
+    <!-- Non-translatable strings. -->
+    <string name="dark_theme_pref_key" translatable="false">dark_theme_pref_key</string>
+</resources>
