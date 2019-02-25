@@ -1,6 +1,8 @@
 package gmp.thiago.apps.tictactoe;
 
 import androidx.appcompat.app.AppCompatActivity;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,11 +11,28 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private SharedPreferences prefs;
     private Boolean darkTheme;
+
+    private String playerName;
+
+    // View Bindings
+    @BindView(R.id.greetings)
+    TextView greetingsTv;
+    @BindView(R.id.playerName)
+    EditText playerNameEt;
+    @BindView(R.id.start_game_btn)
+    Button startGameBtn;
+    @BindView(R.id.change_name_btn)
+    Button changeNameBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +42,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ButterKnife.bind(this);
 
+        playerName = prefs.getString(getString(R.string.player_name_pref_key), null);
+
+        if (null != playerName) {
+            greetingsTv.setVisibility(View.VISIBLE);
+            greetingsTv.setText(String.format(getString(R.string.greetings), playerName));
+            playerNameEt.setVisibility(View.INVISIBLE);
+            changeNameBtn.setVisibility(View.VISIBLE);
+        } else {
+            greetingsTv.setVisibility(View.INVISIBLE);
+            playerNameEt.setVisibility(View.VISIBLE);
+            changeNameBtn.setVisibility(View.INVISIBLE);
+        }
+
+        startGameBtn.setOnClickListener(this);
+        changeNameBtn.setOnClickListener(this);
     }
 
     @Override
@@ -61,9 +96,38 @@ public class MainActivity extends AppCompatActivity {
                 default:
                     return super.onOptionsItemSelected(item);
             }
-
-
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        SharedPreferences.Editor editor = prefs.edit();
+        switch (v.getId()) {
+            case R.id.change_name_btn:
+                playerName = null;
+                editor.remove(getString(R.string.player_name_pref_key));
+                editor.commit();
+                greetingsTv.setVisibility(View.INVISIBLE);
+                playerNameEt.setVisibility(View.VISIBLE);
+                changeNameBtn.setVisibility(View.INVISIBLE);
+                break;
+            case R.id.start_game_btn:
+                if (null == playerName) {
+                    playerName = playerNameEt.getText().toString().trim();
+                    if (!playerName.isEmpty()) {
+                        editor.putString(getString(R.string.player_name_pref_key), playerName);
+                        editor.commit();
+
+                        // TODO: Start game activity
+                    } else {
+                        Toast.makeText(this,
+                                getString(R.string.no_name_error), Toast.LENGTH_LONG).show();
+                    }
+                }
+                break;
+            default:
+                break;
+        }
     }
 }

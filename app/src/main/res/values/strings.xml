@@ -1,9 +1,20 @@
 <resources>
     <string name="app_name">TicTacToe</string>
 
+    <!-- Settings -->
     <string name="use_dark_theme_setting">Use Dark Theme</string>
     <string name="use_light_theme_setting">Use Light Theme</string>
 
+    <!-- Buttons -->
+    <string name="start_game">Start Game</string>
+    <string name="change_name">Change Player\'s Name</string>
+
+    <!-- Main Activity Strings -->
+    <string name="greetings">Hi %s, Welcome back</string>
+    <string name="name_hint">Enter your name</string>
+    <string name="no_name_error">You must enter your name before playing</string>
+    
     <!-- Non-translatable strings. -->
     <string name="dark_theme_pref_key" translatable="false">dark_theme_pref_key</string>
+    <string name="player_name_pref_key" translatable="false">player_name_pref_key</string>
 </resources>
