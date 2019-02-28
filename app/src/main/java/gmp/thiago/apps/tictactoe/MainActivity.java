@@ -20,7 +20,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private SharedPreferences prefs;
-    private Boolean darkTheme;
+    private boolean darkTheme;
 
     private String playerName;
 
@@ -113,17 +113,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 changeNameBtn.setVisibility(View.INVISIBLE);
                 break;
             case R.id.start_game_btn:
-                if (null == playerName) {
+                if (null == playerName || playerName.isEmpty()) {
                     playerName = playerNameEt.getText().toString().trim();
-                    if (!playerName.isEmpty()) {
-                        editor.putString(getString(R.string.player_name_pref_key), playerName);
-                        editor.commit();
+                }
+                if (!playerName.isEmpty()) {
+                    editor.putString(getString(R.string.player_name_pref_key), playerName);
+                    editor.commit();
 
-                        // TODO: Start game activity
-                    } else {
-                        Toast.makeText(this,
-                                getString(R.string.no_name_error), Toast.LENGTH_LONG).show();
-                    }
+                    Intent gameIntent = new Intent(this, BoardActivity.class);
+                    startActivity(gameIntent);
+                } else {
+                    Toast.makeText(this,
+                            getString(R.string.no_name_error), Toast.LENGTH_LONG).show();
                 }
                 break;
             default:

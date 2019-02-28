@@ -13,7 +13,7 @@
     <string name="greetings">Hi %s, Welcome back</string>
     <string name="name_hint">Enter your name</string>
     <string name="no_name_error">You must enter your name before playing</string>
-    
+
     <!-- Non-translatable strings. -->
     <string name="dark_theme_pref_key" translatable="false">dark_theme_pref_key</string>
     <string name="player_name_pref_key" translatable="false">player_name_pref_key</string>
