@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -90,7 +92,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     item.setChecked(true);
 
                     Intent refreshIntent = new Intent(this, MainActivity.class);
-                    startActivity(refreshIntent);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        startActivity(refreshIntent,
+                                ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+                    } else {
+                        startActivity(refreshIntent);
+                    }
                     finish();
                     return true;
                 default:

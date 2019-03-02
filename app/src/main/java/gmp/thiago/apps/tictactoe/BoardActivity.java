@@ -8,6 +8,7 @@ import gmp.thiago.apps.ai.ComputerAI;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.app.ActivityOptions;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
@@ -82,7 +84,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         registerReceiver(receiver, intentFilter);
 
         playerName = prefs.getString(getString(R.string.player_name_pref_key), null);
-        dialog = new ThinkingDialog(this);
+        dialog = new ThinkingDialog(this, darkTheme ? R.style.DarkDialog : R.style.LightDialog);
 
         ButterKnife.bind(this);
 
@@ -145,62 +147,33 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void playComputer() {
-        currentPlayerTv.setText(R.string.computer_name);
-        dialog.show();
-        new ComputerPlay().execute(availableSpaces);
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (dialog.isShowing()) {
+            dialog.dismiss();
+        }
+        unregisterReceiver(receiver);
     }
 
-    private void processComputerPlay(int computer) {
-        dialog.dismiss();
-        availableSpaces.remove(availableSpaces.indexOf(computer));
-        positions[computer] = 'O';
-        View chosenView = null;
-        switch (computer) {
-            case 0:
-                chosenView = area_0_0;
-                break;
-            case 1:
-                chosenView = area_0_1;
-                break;
-            case 2:
-                chosenView = area_0_2;
-                break;
-            case 3:
-                chosenView = area_1_0;
-                break;
-            case 4:
-                chosenView = area_1_1;
-                break;
-            case 5:
-               chosenView = area_1_2;
-                break;
-            case 6:
-                chosenView = area_2_0;
-                break;
-            case 7:
-                chosenView = area_2_1;
-                break;
-            case 8:
-                chosenView = area_2_2;
-                break;
-            default:
-                break;
-        }
-        drawSymbol(chosenView, oSymbol);
-
-        checkResult();
-
-        if (!gameFinished) {
-            userPlaying = true;
-            currentPlayerTv.setText(playerName);
-            startTime = System.nanoTime();
-            handler.post(timerRunnable);
-        }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putCharArray(getString(R.string.positions_key), positions);
+        outState.putIntegerArrayList(getString(R.string.available_key), availableSpaces);
+        outState.putBoolean(getString(R.string.game_finished_key), gameFinished);
+        outState.putBoolean(getString(R.string.user_playing_key), userPlaying);
+        outState.putLong(getString(R.string.total_time_key), userTotalTime);
+        outState.putBoolean(getString(R.string.dialog_showing_key), dialog.isShowing());
     }
 
     /*
      * By deliberate decision, Player will play X, while computer will play O
+     *
+     * onClick method handles just the game areas. Nothing else should hit here
+     * Will only be handled whan user is playing. Clicks while computer is thinking won't
+     * be handled.
      */
     @Override
     public void onClick(View area) {
@@ -252,16 +225,73 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (dialog.isShowing()) {
-            dialog.dismiss();
-        }
-        unregisterReceiver(receiver);
+    /**
+     * playComputer calls the AsyncTask to get computer move.
+     * Move was created as a separate library to be easily replaced.
+     */
+    private void playComputer() {
+        currentPlayerTv.setText(R.string.computer_name);
+        dialog.show();
+        new ComputerPlay().execute(availableSpaces);
     }
 
+    /**
+     * Handles the response from the computer
+     * @param computer Result from the AsyncTask
+     */
+    private void processComputerPlay(int computer) {
+        dialog.dismiss();
+        availableSpaces.remove(availableSpaces.indexOf(computer));
+        positions[computer] = 'O';
+        View chosenView = null;
+        switch (computer) {
+            case 0:
+                chosenView = area_0_0;
+                break;
+            case 1:
+                chosenView = area_0_1;
+                break;
+            case 2:
+                chosenView = area_0_2;
+                break;
+            case 3:
+                chosenView = area_1_0;
+                break;
+            case 4:
+                chosenView = area_1_1;
+                break;
+            case 5:
+               chosenView = area_1_2;
+                break;
+            case 6:
+                chosenView = area_2_0;
+                break;
+            case 7:
+                chosenView = area_2_1;
+                break;
+            case 8:
+                chosenView = area_2_2;
+                break;
+            default:
+                break;
+        }
+        drawSymbol(chosenView, oSymbol);
+
+        checkResult();
+
+        if (!gameFinished) {
+            userPlaying = true;
+            currentPlayerTv.setText(playerName);
+            startTime = System.nanoTime();
+            handler.post(timerRunnable);
+        }
+    }
+
+    /**
+     * Draws the symbol in the designated area, providing a fade-in animation
+     * @param area
+     * @param symbol
+     */
     private void drawSymbol(View area, Drawable symbol) {
         ObjectAnimator animator = ObjectAnimator.ofFloat(area, View.ALPHA, 0f, 1f);
         animator.addListener(new AnimatorListenerAdapter() {
@@ -278,9 +308,11 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         if (userPlaying) {
             handler.removeCallbacks(timerRunnable);
         }
-
     }
 
+    /**
+     * Checks all the possibilities to check if there's a winner, a tie or if game continues.
+     */
     private void checkResult() {
         // There's no need if less than 5 moves were made. No one can win with 2 moves
         if (availableSpaces.size()>4) return;
@@ -377,18 +409,26 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             resultIntent.putExtra(getString(R.string.winner_key), result);
             resultIntent.putExtra(getString(R.string.total_time_key), userTotalTime);
 
-            startActivity(resultIntent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                startActivity(resultIntent,
+                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+            } else {
+                startActivity(resultIntent);
+            }
             finish();
         }
     }
 
+    /**
+     * Handler for the user's play time
+     */
     final static Handler handler = new Handler();
     private Runnable timerRunnable = new Runnable() {
 
         @Override
         public void run() {
-            cronoTv.setText(String.format("%02d:%02d.%03d",userTotalTime/60000,(userTotalTime/1000)%60,
-                                                            userTotalTime%1000));
+            cronoTv.setText(String.format(getString(R.string.time_mask),
+                            userTotalTime/60000,(userTotalTime/1000)%60, userTotalTime%1000));
 
             userTotalTime += (System.nanoTime() - startTime)/1000000;
 
@@ -397,6 +437,10 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         }
     };
 
+    /**
+     * Receiver for the computer selection.
+     * Opted to use a BroadcastReceiver to avoid problems during rotation
+     */
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -406,7 +450,10 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         }
     };
 
-
+    /**
+     * AsyncTask that requests the selection for the Computer.
+     * This library expects to receive the available spaces.
+     */
     private class ComputerPlay extends AsyncTask<ArrayList<Integer>, Void, Integer> {
 
         @Override
@@ -422,16 +469,5 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             compIntent.putExtra(getString(R.string.computer_move_key), result);
             sendBroadcast(compIntent);
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putCharArray(getString(R.string.positions_key), positions);
-        outState.putIntegerArrayList(getString(R.string.available_key), availableSpaces);
-        outState.putBoolean(getString(R.string.game_finished_key), gameFinished);
-        outState.putBoolean(getString(R.string.user_playing_key), userPlaying);
-        outState.putLong(getString(R.string.total_time_key), userTotalTime);
-        outState.putBoolean(getString(R.string.dialog_showing_key), dialog.isShowing());
     }
 }

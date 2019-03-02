@@ -17,8 +17,8 @@ public class ThinkingDialog extends Dialog {
     @BindView(R.id.thinkinTv)
     TextView thinkingTv;
 
-    public ThinkingDialog(@NonNull Context context) {
-        super(context);
+    public ThinkingDialog(@NonNull Context context, int style) {
+        super(context, style);
     }
 
     @Override

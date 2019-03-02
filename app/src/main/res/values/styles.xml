@@ -15,6 +15,7 @@
     </style>
 
     <style name="DarkDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowBackground">@color/darkColorPrimaryDark</item>
         <item name="colorPrimary">@color/darkColorPrimary</item>
         <item name="colorPrimaryDark">@color/darkColorPrimaryDark</item>
         <item name="colorAccent">@color/darkColorAccent</item>
