@@ -16,7 +16,7 @@
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/start_game_btn"
         app:layout_constraintEnd_toEndOf="@+id/start_game_btn"
-        app:layout_constraintStart_toStartOf="@+id/start_game_btn" />
+        app:layout_constraintStart_toStartOf="@+id/start_game_btn"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"

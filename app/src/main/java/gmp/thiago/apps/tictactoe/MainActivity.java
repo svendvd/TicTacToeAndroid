@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -58,12 +59,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             greetingsTv.setVisibility(View.INVISIBLE);
             playerNameEt.setVisibility(View.VISIBLE);
             changeNameBtn.setVisibility(View.INVISIBLE);
-            InputMethodManager imm = (InputMethodManager)   getSystemService(INPUT_METHOD_SERVICE);
-            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         }
 
         startGameBtn.setOnClickListener(this);
         changeNameBtn.setOnClickListener(this);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
     }
 
     @Override
