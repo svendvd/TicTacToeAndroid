@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             greetingsTv.setVisibility(View.INVISIBLE);
             playerNameEt.setVisibility(View.VISIBLE);
             changeNameBtn.setVisibility(View.INVISIBLE);
+            InputMethodManager imm = (InputMethodManager)   getSystemService(INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         }
 
         startGameBtn.setOnClickListener(this);
@@ -110,6 +113,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         SharedPreferences.Editor editor = prefs.edit();
+        InputMethodManager imm = (InputMethodManager)   getSystemService(INPUT_METHOD_SERVICE);
+
         switch (v.getId()) {
             case R.id.change_name_btn:
                 playerName = null;
@@ -118,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 greetingsTv.setVisibility(View.INVISIBLE);
                 playerNameEt.setVisibility(View.VISIBLE);
                 changeNameBtn.setVisibility(View.INVISIBLE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
                 break;
             case R.id.start_game_btn:
                 if (null == playerName || playerName.isEmpty()) {
@@ -126,6 +132,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (!playerName.isEmpty()) {
                     editor.putString(getString(R.string.player_name_pref_key), playerName);
                     editor.commit();
+
+                    imm.hideSoftInputFromWindow(playerNameEt.getWindowToken(), 0);
 
                     Intent gameIntent = new Intent(this, BoardActivity.class);
                     startActivity(gameIntent);

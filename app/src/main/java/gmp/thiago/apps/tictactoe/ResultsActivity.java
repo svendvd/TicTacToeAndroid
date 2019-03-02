@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -58,7 +60,12 @@ public class ResultsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent playIntent = new Intent(ResultsActivity.this, BoardActivity.class);
-                startActivity(playIntent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    startActivity(playIntent,
+                            ActivityOptions.makeSceneTransitionAnimation(ResultsActivity.this).toBundle());
+                } else {
+                    startActivity(playIntent);
+                }
                 finish();
             }
         });
