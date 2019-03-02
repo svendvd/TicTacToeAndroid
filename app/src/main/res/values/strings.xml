@@ -8,13 +8,28 @@
     <!-- Buttons -->
     <string name="start_game">Start Game</string>
     <string name="change_name">Change Player\'s Name</string>
+    <string name="play_again">Play Again</string>
 
     <!-- Main Activity Strings -->
     <string name="greetings">Hi %s, Welcome back</string>
     <string name="name_hint">Enter your name</string>
     <string name="no_name_error">You must enter your name before playing</string>
 
+    <!-- Board Activity Strings -->
+    <string name="time_mask">%02d:%02d.%03d</string>
+    <string name="computer_name">Computer</string>
+
+    <!-- Result Activity Strings -->
+    <string name="result_user">Congratulations %s, You have won!</string>
+    <string name="result_computer">Computer has won. Want to try again?</string>
+    <string name="result_tie">Nice game. It was a tie.</string>
+    <string name="used_time">Used %02d:%02d.%03d</string>
+
     <!-- Non-translatable strings. -->
     <string name="dark_theme_pref_key" translatable="false">dark_theme_pref_key</string>
     <string name="player_name_pref_key" translatable="false">player_name_pref_key</string>
+    <string name="winner_key" translatable="false">winner_key</string>
+    <string name="total_time_key" translatable="false">total_time_key</string>
+
+
 </resources>

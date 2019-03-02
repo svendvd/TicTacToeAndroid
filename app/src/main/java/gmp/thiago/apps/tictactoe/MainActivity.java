@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     Intent gameIntent = new Intent(this, BoardActivity.class);
                     startActivity(gameIntent);
+                    finish();
                 } else {
                     Toast.makeText(this,
                             getString(R.string.no_name_error), Toast.LENGTH_LONG).show();

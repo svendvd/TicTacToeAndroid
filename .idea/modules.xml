@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TicTacToeAndroid.iml" filepath="$PROJECT_DIR$/TicTacToeAndroid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ai/ai.iml" filepath="$PROJECT_DIR$/ai/ai.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
