@@ -5,12 +5,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import gmp.thiago.apps.ai.ComputerAI;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.TextView;
@@ -32,6 +39,11 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
 
     private ArrayList<Integer> availableSpaces;
     private char[] positions;
+
+    private static ThinkingDialog dialog;
+
+    private Drawable xSymbol;
+    private Drawable oSymbol;
 
     // Bindings
     @BindView(R.id.area_0_0)
@@ -65,7 +77,12 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_board);
 
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(getString(R.string.action));
+        registerReceiver(receiver, intentFilter);
+
         playerName = prefs.getString(getString(R.string.player_name_pref_key), null);
+        dialog = new ThinkingDialog(this);
 
         ButterKnife.bind(this);
 
@@ -79,11 +96,38 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         area_2_1.setOnClickListener(this);
         area_2_2.setOnClickListener(this);
 
-        availableSpaces = new ArrayList<>();
-        for (int i = 0; i< 9; i++) {
-            availableSpaces.add(i);
+        xSymbol = getResources().getDrawable(R.drawable.x_symbol);
+        oSymbol = getResources().getDrawable(R.drawable.o_symbol);
+
+        if (null != savedInstanceState) {
+            availableSpaces = savedInstanceState.getIntegerArrayList(getString(R.string.available_key));
+            positions = savedInstanceState.getCharArray(getString(R.string.positions_key));
+
+            userPlaying = savedInstanceState.getBoolean(getString(R.string.user_playing_key));
+            userTotalTime = savedInstanceState.getLong(getString(R.string.total_time_key));
+            gameFinished = savedInstanceState.getBoolean(getString(R.string.game_finished_key));
+
+            area_0_0.setBackground(positions[0] == 'X' ? xSymbol : positions[0] == 'O' ? oSymbol : null);
+            area_0_1.setBackground(positions[1] == 'X' ? xSymbol : positions[1] == 'O' ? oSymbol : null);
+            area_0_2.setBackground(positions[2] == 'X' ? xSymbol : positions[2] == 'O' ? oSymbol : null);
+            area_1_0.setBackground(positions[3] == 'X' ? xSymbol : positions[3] == 'O' ? oSymbol : null);
+            area_1_1.setBackground(positions[4] == 'X' ? xSymbol : positions[4] == 'O' ? oSymbol : null);
+            area_1_2.setBackground(positions[5] == 'X' ? xSymbol : positions[5] == 'O' ? oSymbol : null);
+            area_2_0.setBackground(positions[6] == 'X' ? xSymbol : positions[6] == 'O' ? oSymbol : null);
+            area_2_1.setBackground(positions[7] == 'X' ? xSymbol : positions[7] == 'O' ? oSymbol : null);
+            area_2_2.setBackground(positions[8] == 'X' ? xSymbol : positions[8] == 'O' ? oSymbol : null);
+
+            if (savedInstanceState.getBoolean(getString(R.string.dialog_showing_key))) {
+                dialog.show();
+            }
+
+        } else {
+            availableSpaces = new ArrayList<>();
+            for (int i = 0; i < 9; i++) {
+                availableSpaces.add(i);
+            }
+            positions = new char[9];
         }
-        positions = new char[9];
         gameFinished = false;
     }
 
@@ -103,43 +147,48 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
 
     private void playComputer() {
         currentPlayerTv.setText(R.string.computer_name);
+        dialog.show();
         new ComputerPlay().execute(availableSpaces);
     }
 
     private void processComputerPlay(int computer) {
+        dialog.dismiss();
         availableSpaces.remove(availableSpaces.indexOf(computer));
         positions[computer] = 'O';
+        View chosenView = null;
         switch (computer) {
             case 0:
-                drawSymbol(area_0_0);
+                chosenView = area_0_0;
                 break;
             case 1:
-                drawSymbol(area_0_1);
+                chosenView = area_0_1;
                 break;
             case 2:
-                drawSymbol(area_0_2);
+                chosenView = area_0_2;
                 break;
             case 3:
-                drawSymbol(area_1_0);
+                chosenView = area_1_0;
                 break;
             case 4:
-                drawSymbol(area_1_1);
+                chosenView = area_1_1;
                 break;
             case 5:
-                drawSymbol(area_1_2);
+               chosenView = area_1_2;
                 break;
             case 6:
-                drawSymbol(area_2_0);
+                chosenView = area_2_0;
                 break;
             case 7:
-                drawSymbol(area_2_1);
+                chosenView = area_2_1;
                 break;
             case 8:
-                drawSymbol(area_2_2);
+                chosenView = area_2_2;
                 break;
             default:
                 break;
         }
+        drawSymbol(chosenView, oSymbol);
+
         checkResult();
 
         if (!gameFinished) {
@@ -195,7 +244,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
                 positions[8] = 'X';
                 break;
         }
-        drawSymbol(area);
+        drawSymbol(area, xSymbol);
         checkResult();
         if (!gameFinished) {
             userPlaying = false;
@@ -203,15 +252,33 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void drawSymbol(View area) {
-        Drawable symbol;
-        if (userPlaying) {
-            symbol = getResources().getDrawable(R.drawable.x_symbol);
-            handler.removeCallbacks(timerRunnable);
-        } else {
-            symbol = getResources().getDrawable(R.drawable.o_symbol);
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (dialog.isShowing()) {
+            dialog.dismiss();
         }
-        area.setBackground(symbol);
+        unregisterReceiver(receiver);
+    }
+
+    private void drawSymbol(View area, Drawable symbol) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(area, View.ALPHA, 0f, 1f);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                if (null != area) {
+                    area.setBackground(symbol);
+                }
+            }
+        });
+        animator.setDuration(750);
+        animator.start();
+        if (userPlaying) {
+            handler.removeCallbacks(timerRunnable);
+        }
+
     }
 
     private void checkResult() {
@@ -315,7 +382,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    final Handler handler = new Handler();
+    final static Handler handler = new Handler();
     private Runnable timerRunnable = new Runnable() {
 
         @Override
@@ -330,6 +397,16 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         }
     };
 
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(getString(R.string.action))) {
+                processComputerPlay(intent.getIntExtra(getString(R.string.computer_move_key), -1));
+            }
+        }
+    };
+
+
     private class ComputerPlay extends AsyncTask<ArrayList<Integer>, Void, Integer> {
 
         @Override
@@ -339,7 +416,22 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
 
         @Override
         protected void onPostExecute(Integer result) {
-            processComputerPlay(result);
+            //processComputerPlay(result);
+            Intent compIntent = new Intent();
+            compIntent.setAction(getString(R.string.action));
+            compIntent.putExtra(getString(R.string.computer_move_key), result);
+            sendBroadcast(compIntent);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putCharArray(getString(R.string.positions_key), positions);
+        outState.putIntegerArrayList(getString(R.string.available_key), availableSpaces);
+        outState.putBoolean(getString(R.string.game_finished_key), gameFinished);
+        outState.putBoolean(getString(R.string.user_playing_key), userPlaying);
+        outState.putLong(getString(R.string.total_time_key), userTotalTime);
+        outState.putBoolean(getString(R.string.dialog_showing_key), dialog.isShowing());
     }
 }

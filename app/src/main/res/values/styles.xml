@@ -14,4 +14,15 @@
         <item name="colorAccent">@color/darkColorAccent</item>
     </style>
 
+    <style name="DarkDialog" parent="Theme.AppCompat.Dialog">
+        <item name="colorPrimary">@color/darkColorPrimary</item>
+        <item name="colorPrimaryDark">@color/darkColorPrimaryDark</item>
+        <item name="colorAccent">@color/darkColorAccent</item>
+    </style>
+    <style name="LightDialog" parent="Theme.AppCompat.Dialog">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
 </resources>

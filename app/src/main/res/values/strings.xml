@@ -18,6 +18,7 @@
     <!-- Board Activity Strings -->
     <string name="time_mask">%02d:%02d.%03d</string>
     <string name="computer_name">Computer</string>
+    <string name="computer_thinking">Computer is thinking...</string>
 
     <!-- Result Activity Strings -->
     <string name="result_user">Congratulations %s, You have won!</string>
@@ -30,6 +31,12 @@
     <string name="player_name_pref_key" translatable="false">player_name_pref_key</string>
     <string name="winner_key" translatable="false">winner_key</string>
     <string name="total_time_key" translatable="false">total_time_key</string>
-
+    <string name="positions_key" translatable="false">positions_key</string>
+    <string name="available_key" translatable="false">available_key</string>
+    <string name="user_playing_key" translatable="false">user_playing_key</string>
+    <string name="game_finished_key" translatable="false">game_finished_key</string>
+    <string name="dialog_showing_key" translatable="false">dialog_showing_key</string>
+    <string name="action" translatable="false">gmp.thiago.apps.tictactoe.COMPUTER_MOVED</string>
+    <string name="computer_move_key" translatable="false">computer_move_key</string>
 
 </resources>
