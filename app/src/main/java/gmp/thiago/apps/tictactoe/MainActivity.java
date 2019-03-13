@@ -1,9 +1,5 @@
 package gmp.thiago.apps.tictactoe;
 
-import androidx.appcompat.app.AppCompatActivity;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +16,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -74,18 +74,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.settings_menu, menu);
 
-        if (null != menuInflater) {
-            menuInflater.inflate(R.menu.settings_menu, menu);
-
-            if (darkTheme) {
-                menu.getItem(0).setChecked(true);
-            } else {
-                menu.getItem(1).setChecked(true);
-            }
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
+        menu.findItem(darkTheme ? R.id.dark_theme : R.id.light_theme).setChecked(true);
+        return true;
     }
 
     @Override
@@ -118,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         SharedPreferences.Editor editor = prefs.edit();
-        InputMethodManager imm = (InputMethodManager)   getSystemService(INPUT_METHOD_SERVICE);
+        InputMethodManager inputMethodService = (InputMethodManager)   getSystemService(INPUT_METHOD_SERVICE);
 
         switch (v.getId()) {
             case R.id.change_name_btn:
@@ -128,7 +120,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 greetingsTv.setVisibility(View.INVISIBLE);
                 playerNameEt.setVisibility(View.VISIBLE);
                 changeNameBtn.setVisibility(View.INVISIBLE);
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                if (inputMethodService != null) {
+                    inputMethodService.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                }
                 break;
             case R.id.start_game_btn:
                 if (null == playerName || playerName.isEmpty()) {
@@ -138,7 +132,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     editor.putString(getString(R.string.player_name_pref_key), playerName);
                     editor.commit();
 
-                    imm.hideSoftInputFromWindow(playerNameEt.getWindowToken(), 0);
+                    if (inputMethodService != null) {
+                        inputMethodService.hideSoftInputFromWindow(playerNameEt.getWindowToken(), 0);
+                    }
 
                     Intent gameIntent = new Intent(this, BoardActivity.class);
                     startActivity(gameIntent);

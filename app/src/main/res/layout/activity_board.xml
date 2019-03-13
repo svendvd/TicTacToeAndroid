@@ -50,7 +50,7 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.33" />
 
-        <View
+        <gmp.thiago.apps.tictactoe.view.AreaView
             android:id="@+id/area_0_0"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -65,7 +65,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <View
+        <gmp.thiago.apps.tictactoe.view.AreaView
             android:id="@+id/area_0_1"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -80,7 +80,7 @@
             app:layout_constraintStart_toStartOf="@+id/guideline2"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <View
+        <gmp.thiago.apps.tictactoe.view.AreaView
             android:id="@+id/area_0_2"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -95,7 +95,7 @@
             app:layout_constraintStart_toStartOf="@+id/guideline3"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <View
+        <gmp.thiago.apps.tictactoe.view.AreaView
             android:id="@+id/area_1_0"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -110,7 +110,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline5" />
 
-        <View
+        <gmp.thiago.apps.tictactoe.view.AreaView
             android:id="@+id/area_1_1"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -125,7 +125,7 @@
             app:layout_constraintStart_toStartOf="@+id/guideline2"
             app:layout_constraintTop_toTopOf="@+id/guideline5" />
 
-        <View
+        <gmp.thiago.apps.tictactoe.view.AreaView
             android:id="@+id/area_1_2"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -140,7 +140,7 @@
             app:layout_constraintStart_toStartOf="@+id/guideline3"
             app:layout_constraintTop_toTopOf="@+id/guideline5" />
 
-        <View
+        <gmp.thiago.apps.tictactoe.view.AreaView
             android:id="@+id/area_2_0"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -155,7 +155,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline4" />
 
-        <View
+        <gmp.thiago.apps.tictactoe.view.AreaView
             android:id="@+id/area_2_1"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -170,7 +170,7 @@
             app:layout_constraintStart_toStartOf="@+id/guideline2"
             app:layout_constraintTop_toTopOf="@+id/guideline4" />
 
-        <View
+        <gmp.thiago.apps.tictactoe.view.AreaView
             android:id="@+id/area_2_2"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -200,8 +200,8 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/computer_name" />
 
-    <TextView
-        android:id="@+id/cronoTv"
+    <gmp.thiago.apps.tictactoe.view.TimerView
+        android:id="@+id/cronoView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
